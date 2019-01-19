@@ -41,7 +41,7 @@ module.exports = "h5 {\r\n\tmargin-top: 50px;\r\n}\r\n\r\nbutton,\r\ndiv.alert {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container-fluid\">\n  \n  <div class=\"row\">\n    <h5 class=\"col-xs-12 col-md-8 offset-md-2\">\n      Это тестовая версия. Для правильной работы должны быть разрешены сторонние файлы cookie\n    </h5>\n  </div>\n  \n  <div class=\"row d-flex justify-content-center\">\n    <button type=\"button\" class=\"btn btn-outline-primary btn-lg\"\n    (click)=\"vkAuth()\">\n      <span class=\"fab fa-vk\"></span>&nbsp;Авторизация ВКонтакте\n    </button>\n  </div>\n  \n  <div class=\"row\">\n    <div class=\"alert alert-primary col-xs-12 col-md-8 offset-md-2\" role=\"alert\"\n    *ngIf=\"status == 'connected'\">\n      <p>{{firstName}}&nbsp;{{lastName}}</p>\n      <p>{{nickname}}</p>\n      <p>Ссылка на ВК: <a href=\"{{userHref}}\">{{userHref}}</a></p>\n      <p>Список друзей:</p>\n      <p>{{friends}}</p>\n    </div>\n    \n    <div class=\"alert alert-danger col-xs-12 col-md-8 offset-md-2\" role=\"alert\"\n    *ngIf=\"status == 'not_authorized' || status == 'unknown' || errorMessage\">\n      \n      <p *ngIf=\"status == 'not_authorized'\">\n        Пользователь авторизован ВКонтакте, но не разрешил доступ приложению\n      </p>\n      \n      <p *ngIf=\"status == 'unknown'\">\n        Пользователь не авторизован ВКонтакте\n      </p>\n\n      <p *ngIf=\"errorMessage\">\n        Ошибка.<br>\n        {{errorMessage}}\n      </p>\n    </div>\n\n  </div>\n</div>"
+module.exports = "<div class=\"container-fluid\">\n  \n  <div class=\"row\">\n    <h5 class=\"col-xs-12 col-md-8 offset-md-2\">\n      Это тестовая версия. Для правильной работы должны быть разрешены сторонние файлы cookie\n    </h5>\n  </div>\n  \n  <div class=\"row d-flex justify-content-center\">\n    <button type=\"button\" class=\"btn btn-outline-primary btn-lg\"\n    (click)=\"vkAuth()\">\n      <span class=\"fab fa-vk\"></span>&nbsp;Авторизация ВКонтакте\n    </button>\n  </div>\n  \n  <div class=\"row\">\n    <div class=\"alert alert-primary col-xs-12 col-md-8 offset-md-2\" role=\"alert\"\n    *ngIf=\"status == 'connected'\">\n      <p>{{firstName}}&nbsp;{{lastName}}</p>\n      <p>{{nickname}}</p>\n      <p>Ссылка на ВК: <a href=\"{{userHref}}\">{{userHref}}</a></p>\n      <p>Список друзей:</p>\n      <p>\n        <a href=\"https://vk.com/id{{friendId}}\" *ngFor=\"let friendId of friendsIds\">\n          https://vk.com/id{{friendId}}\n        </a>\n      </p>\n    </div>\n    \n    <div class=\"alert alert-danger col-xs-12 col-md-8 offset-md-2\" role=\"alert\"\n    *ngIf=\"status == 'not_authorized' || status == 'unknown' || errorMessage\">\n      \n      <p *ngIf=\"status == 'not_authorized'\">\n        Пользователь авторизован ВКонтакте, но не разрешил доступ приложению\n      </p>\n      \n      <p *ngIf=\"status == 'unknown'\">\n        Пользователь не авторизован ВКонтакте\n      </p>\n\n      <p *ngIf=\"errorMessage\">\n        Ошибка.<br>\n        {{errorMessage}}\n      </p>\n    </div>\n\n  </div>\n</div>"
 
 /***/ }),
 
@@ -80,7 +80,6 @@ var AppComponent = /** @class */ (function () {
     function AppComponent(vk, http) {
         this.vk = vk;
         this.http = http;
-        this.status = '';
         this.httpOptions = {
             headers: new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpHeaders"]({
                 'Accept': 'application/json'
@@ -103,6 +102,7 @@ var AppComponent = /** @class */ (function () {
             _this.userHref = response.session.user.href;
             _this.getFriends(response.session.user.id).subscribe(function (response) {
                 console.log('Friends: ', response);
+                _this.friendsIds = response.response.items;
             }, function (err) { _this.errorMessage = err; });
         }, function (error) {
             console.log('VK Auth error', error);
