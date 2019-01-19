@@ -41,7 +41,7 @@ module.exports = "h5 {\r\n\tmargin-top: 50px;\r\n}\r\n\r\nbutton,\r\ndiv.alert {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container-fluid\">\n  \n  <div class=\"row\">\n    <h5 class=\"col-xs-12 col-md-8 offset-md-2\">\n      Это тестовая версия. Для правильной работы должны быть разрешены сторонние файлы cookie\n    </h5>\n  </div>\n  \n  <div class=\"row d-flex justify-content-center\">\n    <button type=\"button\" class=\"btn btn-outline-primary btn-lg\"\n    (click)=\"vkAuth()\">\n      <span class=\"fab fa-vk\"></span>&nbsp;Авторизация ВКонтакте\n    </button>\n  </div>\n  \n  <div class=\"row\">\n    <div class=\"alert alert-primary col-xs-12 col-md-8 offset-md-2\" role=\"alert\"\n    *ngIf=\"status == 'connected'\">\n      <p>{{firstName}}&nbsp;{{lastName}}</p>\n      <p>{{nickname}}</p>\n      <p>Ссылка на ВК: <a href=\"{{userHref}}\">{{userHref}}</a></p>\n      <p>Список друзей:</p>\n      <p>{{friends}}</p>\n    </div>\n    \n    <div class=\"alert alert-danger col-xs-12 col-md-8 offset-md-2\" role=\"alert\"\n    *ngIf=\"status == 'not_authorized' || status == 'unknown'\">\n      \n      <p *ngIf=\"status == 'not_authorized'\">\n        Пользователь авторизован ВКонтакте, но не разрешил доступ приложению\n      </p>\n      \n      <p *ngIf=\"status == 'unknown'\">\n        Пользователь не авторизован ВКонтакте\n      </p>\n    </div>\n\n  </div>\n</div>"
+module.exports = "<div class=\"container-fluid\">\n  \n  <div class=\"row\">\n    <h5 class=\"col-xs-12 col-md-8 offset-md-2\">\n      Это тестовая версия. Для правильной работы должны быть разрешены сторонние файлы cookie\n    </h5>\n  </div>\n  \n  <div class=\"row d-flex justify-content-center\">\n    <button type=\"button\" class=\"btn btn-outline-primary btn-lg\"\n    (click)=\"vkAuth()\">\n      <span class=\"fab fa-vk\"></span>&nbsp;Авторизация ВКонтакте\n    </button>\n  </div>\n  \n  <div class=\"row\">\n    <div class=\"alert alert-primary col-xs-12 col-md-8 offset-md-2\" role=\"alert\"\n    *ngIf=\"status == 'connected'\">\n      <p>{{firstName}}&nbsp;{{lastName}}</p>\n      <p>{{nickname}}</p>\n      <p>Ссылка на ВК: <a href=\"{{userHref}}\">{{userHref}}</a></p>\n      <p>Список друзей:</p>\n      <p>{{friends}}</p>\n    </div>\n    \n    <div class=\"alert alert-danger col-xs-12 col-md-8 offset-md-2\" role=\"alert\"\n    *ngIf=\"status == 'not_authorized' || status == 'unknown' || errorMessage\">\n      \n      <p *ngIf=\"status == 'not_authorized'\">\n        Пользователь авторизован ВКонтакте, но не разрешил доступ приложению\n      </p>\n      \n      <p *ngIf=\"status == 'unknown'\">\n        Пользователь не авторизован ВКонтакте\n      </p>\n\n      <p *ngIf=\"errorMessage\">\n        Ошибка.<br>\n        {{errorMessage}}\n      </p>\n    </div>\n\n  </div>\n</div>"
 
 /***/ }),
 
@@ -57,6 +57,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AppComponent", function() { return AppComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm5/index.js");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm5/operators/index.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -71,9 +73,13 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 };
 
 
+
+
+
 var AppComponent = /** @class */ (function () {
-    function AppComponent(vk) {
+    function AppComponent(vk, http) {
         this.vk = vk;
+        this.http = http;
         this.status = '';
     }
     AppComponent.prototype.ngOnInit = function () {
@@ -90,7 +96,9 @@ var AppComponent = /** @class */ (function () {
             _this.lastName = response.session.user.last_name;
             _this.nickname = response.session.user.nickname;
             _this.userHref = response.session.user.href;
-            // this.friends = response.user.;
+            _this.getFriends(response.session.user.id).subscribe(function (response) {
+                console.log(response);
+            }, function (err) { _this.errorMessage = err; });
         }, function (error) {
             console.log('VK Auth error', error);
         });
@@ -103,6 +111,26 @@ var AppComponent = /** @class */ (function () {
             }, 2); /* 2 - Доступ к друзьям */
         }));
     };
+    AppComponent.prototype.getFriends = function (userId) {
+        return this.http.get('https://api.vk.com/method/friends.get?user_id=' + userId, { withCredentials: true })
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["catchError"])(this.handleError));
+    };
+    AppComponent.prototype.handleError = function (error) {
+        var message;
+        if (error.error instanceof ErrorEvent) {
+            // A client-side or network error occurred. Handle it accordingly.
+            // message = 'An error occurred:'+ error.error.message
+            message = 'A client-side or network error occurred';
+        }
+        else {
+            // The backend returned an unsuccessful response code.
+            // code =  error.status
+            // body = error.error
+            message = error.status;
+        }
+        return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["throwError"])(message);
+    };
+    ;
     AppComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: 'app-root',
@@ -110,7 +138,7 @@ var AppComponent = /** @class */ (function () {
             styles: [__webpack_require__(/*! ./app.component.css */ "./src/app/app.component.css")]
         }),
         __param(0, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])('VK')),
-        __metadata("design:paramtypes", [Object])
+        __metadata("design:paramtypes", [Object, _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"]])
     ], AppComponent);
     return AppComponent;
 }());
@@ -131,7 +159,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AppModule", function() { return AppModule; });
 /* harmony import */ var _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/platform-browser */ "./node_modules/@angular/platform-browser/fesm5/platform-browser.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
-/* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
+/* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -141,21 +170,23 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 
 
+
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
     AppModule = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["NgModule"])({
             declarations: [
-                _app_component__WEBPACK_IMPORTED_MODULE_2__["AppComponent"]
+                _app_component__WEBPACK_IMPORTED_MODULE_3__["AppComponent"]
             ],
             imports: [
-                _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"]
+                _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
+                _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClientModule"]
             ],
             providers: [
                 { provide: 'VK', useValue: window['VK'] }
             ],
-            bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_2__["AppComponent"]]
+            bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_3__["AppComponent"]]
         })
     ], AppModule);
     return AppModule;
