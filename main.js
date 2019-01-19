@@ -30,7 +30,7 @@ webpackEmptyAsyncContext.id = "./src/$$_lazy_route_resource lazy recursive";
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "button {\r\n\tmargin-top: 100px;\r\n}"
+module.exports = "h5 {\r\n\tmargin-top: 50px;\r\n}\r\n\r\nbutton,\r\ndiv.alert {\r\n\tmargin-top: 20px;\r\n}"
 
 /***/ }),
 
@@ -41,7 +41,7 @@ module.exports = "button {\r\n\tmargin-top: 100px;\r\n}"
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container-fluid\">\n  <!-- <div class=\"row d-flex justify-content-center\">\n    <h4></h4>\n  </div> -->\n  <div class=\"row d-flex justify-content-center\">\n    <button type=\"button\" class=\"btn btn-outline-primary btn-lg\"\n    (click)=\"vkAuth()\">\n      <span class=\"fab fa-vk\"></span>&nbsp;Авторизация ВКонтакте\n    </button>\n  </div>\n</div>"
+module.exports = "<div class=\"container-fluid\">\n  \n  <div class=\"row\">\n    <h5 class=\"col-xs-12 col-md-8 offset-md-2\">\n      Это тестовая версия. Для правильной работы должны быть разрешены сторонние файлы cookie\n    </h5>\n  </div>\n  \n  <div class=\"row d-flex justify-content-center\">\n    <button type=\"button\" class=\"btn btn-outline-primary btn-lg\"\n    (click)=\"vkAuth()\">\n      <span class=\"fab fa-vk\"></span>&nbsp;Авторизация ВКонтакте\n    </button>\n  </div>\n  \n  <div class=\"row\">\n    <div class=\"alert alert-primary col-xs-12 col-md-8 offset-md-2\" role=\"alert\"\n    *ngIf=\"status == 'connected'\">\n      <p>{{firstName}}&nbsp;{{lastName}}</p>\n      <p>Ссылка на ВК: <a href=\"{{userHref}}\">{{userHref}}</a></p>\n      <p>Список друзей:</p>\n      <p>{{friends}}</p>\n    </div>\n    \n    <div class=\"alert alert-danger col-xs-12 col-md-8 offset-md-2\" role=\"alert\"\n    *ngIf=\"status == 'not_authorized' || status == 'unknown'\">\n      \n      <p *ngIf=\"status == 'not_authorized'\">\n        Пользователь авторизован ВКонтакте, но не разрешил доступ приложению\n      </p>\n      \n      <p *ngIf=\"status == 'unknown'\">\n        Пользователь не авторизован ВКонтакте\n      </p>\n    </div>\n\n  </div>\n</div>"
 
 /***/ }),
 
@@ -74,6 +74,7 @@ var __param = (undefined && undefined.__param) || function (paramIndex, decorato
 var AppComponent = /** @class */ (function () {
     function AppComponent(vk) {
         this.vk = vk;
+        this.status = '';
     }
     AppComponent.prototype.ngOnInit = function () {
         this.vk.init({
@@ -81,8 +82,11 @@ var AppComponent = /** @class */ (function () {
         });
     };
     AppComponent.prototype.vkAuth = function () {
-        this.login().subscribe(function (session) {
-            console.log('VK Auth response ', session);
+        var _this = this;
+        this.status = 'hh';
+        this.login().subscribe(function (response) {
+            console.log('VK Auth response ', response);
+            _this.status = response.status;
         }, function (error) {
             console.log('VK Auth error', error);
         });
@@ -92,7 +96,7 @@ var AppComponent = /** @class */ (function () {
         return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])(new Promise(function (resolve) {
             _this.vk.Auth.login(function (response) {
                 resolve(response);
-            });
+            }, 2); /* 2 - Доступ к друзьям */
         }));
     };
     AppComponent = __decorate([
