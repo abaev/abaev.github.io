@@ -81,6 +81,7 @@ var AppComponent = /** @class */ (function () {
         this.vk = vk;
         this.http = http;
         this.status = '';
+        this.headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpHeaders"]().set('Accept', 'application/json');
     }
     AppComponent.prototype.ngOnInit = function () {
         this.vk.init({
@@ -113,7 +114,7 @@ var AppComponent = /** @class */ (function () {
     };
     AppComponent.prototype.getFriends = function (userId) {
         return this.http.get('https://api.vk.com/method/friends.get?user_id=' + userId /*,
-            { withCredentials: true }*/)
+            { withCredentials: true }*/, { headers: this.headers })
             .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["catchError"])(this.handleError));
     };
     AppComponent.prototype.handleError = function (error) {
