@@ -97,7 +97,7 @@ var AppComponent = /** @class */ (function () {
             _this.nickname = response.session.user.nickname;
             _this.userHref = response.session.user.href;
             _this.getFriends(response.session.user.id).subscribe(function (response) {
-                console.log(response);
+                console.log('Friends: ', response);
             }, function (err) { _this.errorMessage = err; });
         }, function (error) {
             console.log('VK Auth error', error);
@@ -112,7 +112,8 @@ var AppComponent = /** @class */ (function () {
         }));
     };
     AppComponent.prototype.getFriends = function (userId) {
-        return this.http.get('https://api.vk.com/method/friends.get?user_id=' + userId, { withCredentials: true })
+        return this.http.get('https://api.vk.com/method/friends.get?user_id=' + userId /*,
+            { withCredentials: true }*/)
             .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["catchError"])(this.handleError));
     };
     AppComponent.prototype.handleError = function (error) {
