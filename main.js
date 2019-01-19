@@ -41,7 +41,7 @@ module.exports = "button {\r\n\tmargin-top: 100px;\r\n}"
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container-fluid\">\n  <!-- <div class=\"row d-flex justify-content-center\">\n    <h4></h4>\n  </div> -->\n  <div class=\"row d-flex justify-content-center\">\n    <button type=\"button\" class=\"btn btn-outline-primary btn-lg\"\n    click=\"vkAuth()\">\n      <span class=\"fab fa-vk\"></span>&nbsp;Авторизация ВКонтакте\n    </button>\n  </div>\n</div>"
+module.exports = "<div class=\"container-fluid\">\n  <!-- <div class=\"row d-flex justify-content-center\">\n    <h4></h4>\n  </div> -->\n  <div class=\"row d-flex justify-content-center\">\n    <button type=\"button\" class=\"btn btn-outline-primary btn-lg\"\n    (click)=\"vkAuth()\">\n      <span class=\"fab fa-vk\"></span>&nbsp;Авторизация ВКонтакте\n    </button>\n  </div>\n</div>"
 
 /***/ }),
 
@@ -81,8 +81,10 @@ var AppComponent = /** @class */ (function () {
         });
     };
     AppComponent.prototype.vkAuth = function () {
-        this.login().subscribe(function (response) {
-            console.log('VK Auth response ', response);
+        this.login().subscribe(function (session) {
+            console.log('VK Auth response ', session);
+        }, function (error) {
+            console.log('VK Auth error', error);
         });
     };
     AppComponent.prototype.login = function () {
