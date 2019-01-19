@@ -93,19 +93,21 @@ var AppComponent = /** @class */ (function () {
         });
     };
     AppComponent.prototype.vkAuth = function () {
-        var _this = this;
-        this.login().subscribe(function (response) {
-            console.log('VK Auth response ', response);
-            _this.status = response.status;
-            _this.firstName = response.session.user.first_name;
-            _this.lastName = response.session.user.last_name;
-            _this.nickname = response.session.user.nickname;
-            _this.userHref = response.session.user.href;
-            _this.getFriends(response.session.user.id).subscribe(function (response) {
-                console.log('Friends: ', response);
-            }, function (err) { _this.errorMessage = err; });
-        }, function (error) {
-            console.log('VK Auth error', error);
+        // this.login().subscribe(response => { 
+        // 	console.log('VK Auth response ', response);
+        // 	this.status = response.status;
+        // 	this.firstName = response.session.user.first_name;
+        // 	this.lastName = response.session.user.last_name;
+        // 	this.nickname = response.session.user.nickname;
+        // 	this.userHref = response.session.user.href;
+        // 	this.getFriends(response.session.user.id).subscribe(response => {
+        // 		console.log('Friends: ', response);
+        // 	}, err => { this.errorMessage = err; })
+        // }, error => {
+        // 	console.log('VK Auth error', error);
+        // });
+        this.oAuthLogin().subscribe(function (response) {
+            console.log('VK OAuth: ', response);
         });
     };
     AppComponent.prototype.login = function () {
@@ -115,6 +117,11 @@ var AppComponent = /** @class */ (function () {
                 resolve(response);
             }, 2); /* 2 - Доступ к друзьям */
         }));
+    };
+    AppComponent.prototype.oAuthLogin = function () {
+        return this.http.get('https://oauth.vk.com/authorize?client_id=6824974&redirect_uri=https://abaev.github.io/&scope=friends&v=5.92' /*,
+        { withCredentials: true }*/)
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["catchError"])(this.handleError));
     };
     AppComponent.prototype.getFriends = function (userId) {
         return this.http.get('https://api.vk.com/method/friends.get?user_id=' + userId /*,
