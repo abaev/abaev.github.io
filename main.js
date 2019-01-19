@@ -106,8 +106,15 @@ var AppComponent = /** @class */ (function () {
         // }, error => {
         // 	console.log('VK Auth error', error);
         // });
-        this.oAuthLogin().subscribe(function (response) {
-            console.log('VK OAuth: ', response);
+        // this.oAuthLogin().subscribe(response => {
+        // 	console.log('VK OAuth: ', response);
+        // });
+        fetch('https://oauth.vk.com/authorize?client_id=6824974&redirect_uri=https://abaev.github.io/&scope=friends&v=5.92', {
+            method: 'GET'
+        }).then(function (res) {
+            console.log('Fetch VK API: ', res);
+        }).catch(function (err) {
+            console.log('Error fetching VK API: ', err);
         });
     };
     AppComponent.prototype.login = function () {
