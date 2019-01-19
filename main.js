@@ -86,10 +86,10 @@ var AppComponent = /** @class */ (function () {
         this.login().subscribe(function (response) {
             console.log('VK Auth response ', response);
             _this.status = response.status;
-            _this.firstName = response.user.first_name;
-            _this.lastName = response.user.last_name;
-            _this.nickname = response.user.nickname;
-            _this.userHref = response.user.href;
+            _this.firstName = response.session.user.first_name;
+            _this.lastName = response.session.user.last_name;
+            _this.nickname = response.session.user.nickname;
+            _this.userHref = response.session.user.href;
             // this.friends = response.user.;
         }, function (error) {
             console.log('VK Auth error', error);
