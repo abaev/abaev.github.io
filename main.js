@@ -99,7 +99,7 @@ var AppComponent = /** @class */ (function () {
                 // 	console.log('Friends: ', response);
                 // 	this.friendsIds = response.response.items;
                 // }, err => { this.errorMessage = err; });
-                _this.getFriends(response.session.user.id).subscribe(function (response) {
+                _this.getFriends({ userId: response.session.user.id, fields: 'photo_50' }).subscribe(function (response) {
                     console.log('Friends: ', response);
                     // this.friendsIds = response.response.items;
                 }, function (err) { _this.errorMessage = err; });
@@ -125,13 +125,17 @@ var AppComponent = /** @class */ (function () {
     // 		})
     // 	);
     // }
-    AppComponent.prototype.getFriends = function (userId) {
+    AppComponent.prototype.getFriends = function (options) {
         var _this = this;
         return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])(new Promise(function (resolve) {
             // Получаем список ID друзей
-            _this.vk.Api.call('friends.get', { user_id: userId, v: '5.73' }, function (response) {
+            _this.vk.Api.call('friends.get', { user_id: options.userId, v: '5.73' }, function (response) {
                 // Получаем информацию о друзьях
-                _this.vk.Api.call('users.get', { user_ids: response.response.items.join(','), v: '5.73' }, function (response) {
+                _this.vk.Api.call('users.get', {
+                    user_ids: response.response.items.join(','),
+                    fields: options.fields,
+                    v: '5.73'
+                }, function (response) {
                     resolve(response);
                 });
             });
